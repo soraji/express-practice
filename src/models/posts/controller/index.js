@@ -1,6 +1,12 @@
 import { Router } from "express";
 import { PostService } from "../service";
-import { CreatePostDTO, CreateCommentDTO, CreateChildCommentDTO } from "../dto";
+import {
+  CreatePostDTO,
+  CreateCommentDTO,
+  CreateChildCommentDTO,
+  UpdateCommentDTO,
+  UpdatePostDTO,
+} from "../dto";
 import { pagination } from "../../../middleware/pagination";
 
 export class PostController {
@@ -25,11 +31,17 @@ export class PostController {
     this.router.post("/", this.createPost.bind(this));
     this.router.post("/comment", this.createComment.bind(this));
     this.router.post("/child-comment", this.createChildComment.bind(this));
+
+    this.router.patch("/:postId", this.updatePost.bind(this));
+    this.router.patch("/comments/:commentId", this.updateComment.bind(this));
+
+    this.router.delete("/:id", this.deletePost.bind(this));
+    this.router.delete("/comments/:commentId", this.deleteComment.bind(this));
   }
   async getPost(req, res, next) {
     try {
       const { id } = req.params;
-      const post = await this.postService.getPost(id);
+      const post = await this.postService.getPost(id, req.user);
       res.status(200).json({ post });
     } catch (err) {
       next(err);
@@ -141,6 +153,70 @@ export class PostController {
       );
 
       res.status(201).json({ id: newChildCommentId });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async updatePost(req, res, next) {
+    try {
+      if (!req.user) throw { status: 401, message: "로그인을 진행해 주세요" };
+
+      const { postId } = req.params;
+      const body = req.body;
+
+      await this.postService.updatePost(
+        postId,
+        new UpdatePostDTO(body),
+        req.user
+      );
+
+      res.status(200).send("게시글이 수정되었습니다");
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async updateComment(req, res, next) {
+    try {
+      if (!req.user) throw { status: 401, message: "로그인을 진행해 주세요" };
+
+      const { commentId } = req.params;
+      const body = req.body;
+
+      await this.postService.updateComment(
+        commentId,
+        new UpdateCommentDTO(body),
+        req.user
+      );
+
+      res.status(200).json({ message: "댓글이 수정되었습니다" });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async deletePost(req, res, next) {
+    try {
+      if (!req.user) throw { status: 401, message: "로그인을 진행해주세요" };
+      const { id } = req.params;
+
+      await this.postService.deletePost(id, req.user);
+
+      res.status(200).json({ message: "게시글이 삭제되었습니다" });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async deleteComment(req, res, next) {
+    try {
+      if (!req.user) throw { status: 401, message: "로그인을 진행해주세요" };
+      const { id } = req.params;
+
+      await this.PostService.deleteComment(id, req.user);
+
+      res.status(200).json({ message: "댓글이 삭제되었습니다" });
     } catch (err) {
       next(err);
     }

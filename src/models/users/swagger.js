@@ -1,5 +1,5 @@
 export const getUserSwagger = {
-  "/detail/:id": {
+  "/users/detail/:id": {
     get: {
       tags: ["User"],
       summary: "유저 상세 조회 api",
@@ -24,13 +24,19 @@ export const getUserSwagger = {
                     type: "object",
                     properties: {
                       id: {
-                        type: "number",
+                        type: "string",
                       },
                       name: {
                         type: "string",
                       },
                       age: {
                         type: "number",
+                      },
+                      email: {
+                        type: "string",
+                      },
+                      phoneNumber: {
+                        type: "string",
                       },
                     },
                   },
@@ -41,9 +47,120 @@ export const getUserSwagger = {
         },
       },
     },
+  },
+};
+
+export const updateUserSwagger = {
+  "/users": {
+    patch: {
+      tags: ["User"],
+      summary: "유저 수정 api",
+      parameters: [
+        {
+          in: "path",
+          name: "id",
+          required: true,
+          schema: {
+            type: "number",
+          },
+        },
+      ],
+      requestBody: {
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                name: {
+                  type: "string",
+                },
+                age: {
+                  type: "number",
+                },
+                email: {
+                  type: "string",
+                },
+                phoneNumber: {
+                  type: "string",
+                },
+                password: {
+                  type: "string",
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {},
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+export const createUserSwagger = {
+  "/users": {
     post: {
       tags: ["User"],
-      summary: "유저 상세 조회 api",
+      summary: "유저 생성 api",
+      requestBody: {
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                name: {
+                  type: "string",
+                },
+                age: {
+                  type: "number",
+                },
+                email: {
+                  type: "string",
+                },
+                phoneNumber: {
+                  type: "string",
+                },
+                password: {
+                  type: "string",
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  id: "string",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+export const deleteUserSwagger = {
+  "/users": {
+    delete: {
+      tags: ["User"],
+      summary: "유저 삭제 api",
       parameters: [
         {
           in: "path",
@@ -55,27 +172,12 @@ export const getUserSwagger = {
         },
       ],
       responses: {
-        200: {
+        204: {
           content: {
             "application/json": {
               schema: {
                 type: "object",
-                properties: {
-                  user: {
-                    type: "object",
-                    properties: {
-                      id: {
-                        type: "number",
-                      },
-                      name: {
-                        type: "string",
-                      },
-                      age: {
-                        type: "number",
-                      },
-                    },
-                  },
-                },
+                properties: {},
               },
             },
           },

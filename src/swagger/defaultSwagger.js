@@ -6,7 +6,7 @@ const defaultSwagger = {
     description: "스웨거 sample페이지",
   },
   components: {
-    SecuritySchemes: {
+    securitySchemes: {
       bearerAuth: {
         type: "http",
         scheme: "bearer",

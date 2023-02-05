@@ -62,7 +62,7 @@ class UserController {
       const updateUserDto = new UpdateUserDTO(req.body);
 
       await this.userService.updateUser(id, updateUserDto);
-      res.status(204).json({});
+      res.status(200).send("사용자 정보가 수정되었습니다");
     } catch (err) {
       next(err);
     }
@@ -73,7 +73,7 @@ class UserController {
       const { id } = req.params;
       await this.userService.deleteUser(id);
 
-      res.status(204).json({});
+      res.status(200).send("사용자가 삭제되었습니다");
     } catch (err) {
       next(err);
     }

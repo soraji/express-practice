@@ -35,8 +35,7 @@ export class PostService {
     return { posts: posts.map((post) => new PostsDTO(post)), count };
   }
 
-  async getPost(id) {
-    console.log(id);
+  async getPost(id, user) {
     const post = await database.post.findUnique({
       where: {
         id,
@@ -54,12 +53,12 @@ export class PostService {
           },
         },
         tag: true,
+        postLike: true,
       },
     });
-    console.log(post);
-    if (!post) throw { status: 404, message: "게시물을 찾을 수 없습니다" };
 
-    return new PostsDTO(post);
+    if (!post) throw { status: 404, message: "게시물을 찾을 수 없습니다" };
+    return new PostDTO(post, user);
   }
 
   async createPostLike(userId, postId) {
@@ -268,7 +267,101 @@ export class PostService {
     return newChildComment.id;
   }
 
-  async updatePost() {}
+  async updatePost(postId, props, user) {
+    const post = await database.post.findUnique({
+      where: {
+        id: postId,
+      },
+    });
 
-  async updateComment() {}
+    if (!post) throw { status: 404, message: "게시글을 찾을 수 없습니다" };
+
+    if (post.userId !== user.id)
+      throw { status: 403, message: "본인글만 수정이 가능합니다" };
+
+    if (props.tags) {
+      await database.tag.deleteMany({
+        where: {
+          postId: post.id,
+        },
+      });
+
+      await database.tag.createMany({
+        data: props.tags.map((tag) => ({
+          name: tag,
+          postId: post.id,
+        })),
+      });
+    }
+
+    await database.post.update({
+      where: {
+        id: post.id,
+      },
+      data: {
+        title: props.title,
+        content: props.content,
+      },
+    });
+  }
+
+  async updateComment(commentId, props, user) {
+    const comment = await database.comment.findUnique({
+      where: {
+        id: commentId,
+      },
+    });
+
+    if (!comment) throw { status: 404, message: "댓글을 찾을 수 없습니다" };
+
+    if (comment.userId !== user.id)
+      throw { status: 403, message: "댓글 수정 권한이 없습니다" };
+
+    await database.comment.update({
+      where: {
+        id: comment.id,
+      },
+      data: {
+        content: props.content,
+      },
+    });
+  }
+
+  async deletePost(postId, user) {
+    const post = await database.post.findUnique({
+      where: {
+        id: postId,
+      },
+    });
+
+    if (!post) throw { status: 404, message: "게시글을 찾을 수 없습니다" };
+
+    if (post.userId !== user.id)
+      throw { status: 401, message: "삭제 권한이 없습니다" };
+
+    await database.post.delete({
+      where: {
+        id: post.id,
+      },
+    });
+  }
+
+  async deleteComment(commentId, user) {
+    const comment = await database.comment.findUnique({
+      where: {
+        id: commentId,
+      },
+    });
+
+    if (!comment) throw { status: 404, message: "댓글을 찾을 수 없습니다" };
+
+    if (comment.userId !== user.id)
+      throw { status: 401, message: "삭제 권한이 없습니다" };
+
+    await database.comment.delete({
+      where: {
+        id: comment.id,
+      },
+    });
+  }
 }

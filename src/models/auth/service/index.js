@@ -17,7 +17,6 @@ export class AuthService {
 
       if (isExist) throw { status: 400, message: "이미 존재하는 이메일입니다" };
 
-      console.log(props);
       const newUserId = await this.userService.createUser(
         new CreateUserDTO({
           ...props,
@@ -32,8 +31,6 @@ export class AuthService {
       const refreshToken = jwt.sign({ id: newUserId }, process.env.JWT_KEY, {
         expiresIn: "14d",
       });
-
-      console.log({ accessToken, refreshToken });
 
       return { accessToken, refreshToken };
     } catch (err) {
