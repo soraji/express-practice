@@ -19,7 +19,6 @@ import { jwtAuth } from "./middleware";
     })
   );
   jwtAuth();
-  app.use(helmet());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true, limit: "700mb" }));
   app.use(jwtAuth);
@@ -31,6 +30,7 @@ import { jwtAuth } from "./middleware";
     res.status(200).json(swaggerDocs);
   });
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(undefined, options));
+  app.use(helmet());
 
   app.get("/", (req, res) => {
     res.send("hello!????");
