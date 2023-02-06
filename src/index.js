@@ -40,7 +40,8 @@ import { jwtAuth } from "./middleware";
       .status(err.status || 500)
       .json({ message: err.message || "서버에서 에러가 발생하였습니다" });
   });
-  app.listen(8080, () => {
+  const port = process.env.PORT || 8080;
+  app.listen(port, () => {
     console.log("express서버가 실행되었습니다");
   });
 })();
