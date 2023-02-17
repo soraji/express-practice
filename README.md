@@ -7,7 +7,7 @@
 <br>
 
 ## Swagger
-http://ec2-3-38-58-121.ap-northeast-2.compute.amazonaws.com:8080/api-docs/
+http://ec2-3-36-87-15.ap-northeast-2.compute.amazonaws.com:8080/api-docs/
 
 ---
 
